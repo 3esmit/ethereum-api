@@ -48,7 +48,7 @@ contract OraclizeI {
 contract OraclizeAddrResolverI {
     function getAddress() returns (address _addr);
 }
-library usingOraclize {
+library Oraclize {
     uint constant day = 60*60*24;
     uint constant week = 60*60*24*7;
     uint constant month = 60*60*24*30;
@@ -87,12 +87,6 @@ library usingOraclize {
         if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA)>0){ //browser-solidity
             return OraclizeI(OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA).getAddress());
         }
-    }
-
-    function __callback(bytes32 myid, string result) {
-        __callback(myid, result, new bytes(0));
-    }
-    function __callback(bytes32 myid, string result, bytes proof) {
     }
 
     function oraclize_getPrice(string datasource) internal returns (uint){
@@ -370,5 +364,17 @@ library usingOraclize {
             }
             return res;
         }
+}
+
+contract Oraclized {
+    using Oraclize for OraclizeI;
+    OraclizeI oraclize = Oraclize.oraclize_setNetwork();
+
+    function __callback(bytes32 myid, string result) {
+        __callback(myid, result, new bytes(0));
+    }
+    function __callback(bytes32 myid, string result, bytes proof) {
+    }
+
 }
 // </ORACLIZE_API>
