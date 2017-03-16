@@ -61,8 +61,8 @@ library Oraclize {
     uint8 constant networkID_morden = 2;
     uint8 constant networkID_consensys = 161;
 
-    modifier coupon(string code){
-        oraclize.useCoupon(code);
+    modifier coupon(OraclizeI self, string code){
+        self.useCoupon(code);
         _;
     }
 
