@@ -61,14 +61,12 @@ library Oraclize {
     uint8 constant networkID_morden = 2;
     uint8 constant networkID_consensys = 161;
 
-    uint8 constant OraclizeI oraclize = oraclize_setNetwork();
-
     modifier coupon(string code){
         oraclize.useCoupon(code);
         _;
     }
 
-    function oraclize_setNetwork() internal returns(OraclizeI){
+    function getOraclize() internal constant returns(OraclizeI){
         if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed)>0){ //mainnet
             return OraclizeI(OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed).getAddress());
         }
@@ -89,232 +87,211 @@ library Oraclize {
         }
     }
 
-    function oraclize_getPrice(string datasource) internal returns (uint){
-        return oraclize.getPrice(datasource);
-    }
-
-    function oraclize_getPrice(string datasource, uint gaslimit) internal returns (uint){
-        return oraclize.getPrice(datasource, gaslimit);
-    }
-    
-    function oraclize_query(string datasource, string arg) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource);
+     function _query(OraclizeI self, string datasource, string arg)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource);
         if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
-        return oraclize.query.value(price)(0, datasource, arg);
+        return self.query.value(price)(0, datasource, arg);
     }
-    function oraclize_query(uint timestamp, string datasource, string arg) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource);
+    function _query(OraclizeI self, uint timestamp, string datasource, string arg)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource);
         if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
-        return oraclize.query.value(price)(timestamp, datasource, arg);
+        return self.query.value(price)(timestamp, datasource, arg);
     }
-    function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource, gaslimit);
+    function _query(OraclizeI self, uint timestamp, string datasource, string arg, uint gaslimit)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource, gaslimit);
         if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
-        return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
+        return self.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);
     }
-    function oraclize_query(string datasource, string arg, uint gaslimit) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource, gaslimit);
+    function _query(OraclizeI self, string datasource, string arg, uint gaslimit)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource, gaslimit);
         if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
-        return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
+        return self.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);
     }
-    function oraclize_query(string datasource, string arg1, string arg2) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource);
+    function _query(OraclizeI self, string datasource, string arg1, string arg2)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource);
         if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
-        return oraclize.query2.value(price)(0, datasource, arg1, arg2);
+        return self.query2.value(price)(0, datasource, arg1, arg2);
     }
-    function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource);
+    function _query(OraclizeI self, uint timestamp, string datasource, string arg1, string arg2)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource);
         if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
-        return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);
+        return self.query2.value(price)(timestamp, datasource, arg1, arg2);
     }
-    function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource, gaslimit);
+    function _query(OraclizeI self, uint timestamp, string datasource, string arg1, string arg2, uint gaslimit)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource, gaslimit);
         if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
-        return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
+        return self.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);
     }
-    function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource, gaslimit);
+    function _query(OraclizeI self, string datasource, string arg1, string arg2, uint gaslimit)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource, gaslimit);
         if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
-        return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
+        return self.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);
     }
-    function oraclize_query(string datasource, string[] argN) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource);
+    function _query(OraclizeI self, string datasource, string[] argN)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource);
         if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
-        return oraclize.queryN.value(price)(0, datasource, args);
+        return self.queryN.value(price)(0, datasource, args);
     }
-    function oraclize_query(uint timestamp, string datasource, string[] argN) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource);
+    function _query(OraclizeI self, uint timestamp, string datasource, string[] argN)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource);
         if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
-        return oraclize.queryN.value(price)(timestamp, datasource, args);
+        return self.queryN.value(price)(timestamp, datasource, args);
     }
-    function oraclize_query(uint timestamp, string datasource, string[] argN, uint gaslimit) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource, gaslimit);
+    function _query(OraclizeI self, uint timestamp, string datasource, string[] argN, uint gaslimit)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource, gaslimit);
         if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
-        return oraclize.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
+        return self.queryN_withGasLimit.value(price)(timestamp, datasource, args, gaslimit);
     }
-    function oraclize_query(string datasource, string[] argN, uint gaslimit) internal returns (bytes32 id){
-        uint price = oraclize.getPrice(datasource, gaslimit);
+    function _query(OraclizeI self, string datasource, string[] argN, uint gaslimit)  internal returns (bytes32 id){
+        uint price = self.getPrice(datasource, gaslimit);
         if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price
         bytes memory args = stra2cbor(argN);
-        return oraclize.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
+        return self.queryN_withGasLimit.value(price)(0, datasource, args, gaslimit);
     }
-    function oraclize_query(string datasource, string[1] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[1] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](1);
         dynargs[0] = args[0];
-        return oraclize_query(datasource, dynargs);
+        return _query(self, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[1] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[1] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](1);
         dynargs[0] = args[0];
-        return oraclize_query(timestamp, datasource, dynargs);
+        return _query(self, timestamp, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[1] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[1] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](1);
         dynargs[0] = args[0];
-        return oraclize_query(timestamp, datasource, dynargs, gaslimit);
+        return _query(self, timestamp, datasource, dynargs, gaslimit);
     }
-    function oraclize_query(string datasource, string[1] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[1] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](1);
         dynargs[0] = args[0];       
-        return oraclize_query(datasource, dynargs, gaslimit);
+        return _query(self, datasource, dynargs, gaslimit);
     }
     
-    function oraclize_query(string datasource, string[2] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[2] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](2);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
-        return oraclize_query(datasource, dynargs);
+        return _query(self, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[2] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[2] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](2);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
-        return oraclize_query(timestamp, datasource, dynargs);
+        return _query(self, timestamp, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[2] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[2] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](2);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
-        return oraclize_query(timestamp, datasource, dynargs, gaslimit);
+        return _query(self, timestamp, datasource, dynargs, gaslimit);
     }
-    function oraclize_query(string datasource, string[2] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[2] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](2);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
-        return oraclize_query(datasource, dynargs, gaslimit);
+        return _query(self, datasource, dynargs, gaslimit);
     }
-    function oraclize_query(string datasource, string[3] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[3] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](3);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
-        return oraclize_query(datasource, dynargs);
+        return _query(self, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[3] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[3] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](3);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
-        return oraclize_query(timestamp, datasource, dynargs);
+        return _query(self, timestamp, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[3] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[3] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](3);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
-        return oraclize_query(timestamp, datasource, dynargs, gaslimit);
+        return _query(self, timestamp, datasource, dynargs, gaslimit);
     }
-    function oraclize_query(string datasource, string[3] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[3] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](3);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
-        return oraclize_query(datasource, dynargs, gaslimit);
+        return _query(self, datasource, dynargs, gaslimit);
     }
     
-    function oraclize_query(string datasource, string[4] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[4] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](4);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
         dynargs[3] = args[3];
-        return oraclize_query(datasource, dynargs);
+        return _query(self, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[4] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[4] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](4);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
         dynargs[3] = args[3];
-        return oraclize_query(timestamp, datasource, dynargs);
+        return _query(self, timestamp, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[4] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[4] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](4);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
         dynargs[3] = args[3];
-        return oraclize_query(timestamp, datasource, dynargs, gaslimit);
+        return _query(self, timestamp, datasource, dynargs, gaslimit);
     }
-    function oraclize_query(string datasource, string[4] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[4] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](4);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
         dynargs[3] = args[3];
-        return oraclize_query(datasource, dynargs, gaslimit);
+        return _query(self, datasource, dynargs, gaslimit);
     }
-    function oraclize_query(string datasource, string[5] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[5] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](5);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
         dynargs[3] = args[3];
         dynargs[4] = args[4];
-        return oraclize_query(datasource, dynargs);
+        return _query(self, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[5] args) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[5] args)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](5);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
         dynargs[3] = args[3];
         dynargs[4] = args[4];
-        return oraclize_query(timestamp, datasource, dynargs);
+        return _query(self, timestamp, datasource, dynargs);
     }
-    function oraclize_query(uint timestamp, string datasource, string[5] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, uint timestamp, string datasource, string[5] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](5);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
         dynargs[3] = args[3];
         dynargs[4] = args[4];
-        return oraclize_query(timestamp, datasource, dynargs, gaslimit);
+        return _query(self, timestamp, datasource, dynargs, gaslimit);
     }
-    function oraclize_query(string datasource, string[5] args, uint gaslimit) internal returns (bytes32 id) {
+    function _query(OraclizeI self, string datasource, string[5] args, uint gaslimit)  internal returns (bytes32 id) {
         string[] memory dynargs = new string[](5);
         dynargs[0] = args[0];
         dynargs[1] = args[1];
         dynargs[2] = args[2];
         dynargs[3] = args[3];
         dynargs[4] = args[4];
-        return oraclize_query(datasource, dynargs, gaslimit);
-    }
-
-    function oraclize_cbAddress() internal returns (address){
-        return oraclize.cbAddress();
-    }
-    function oraclize_setProof(byte proofP) internal {
-        return oraclize.setProofType(proofP);
-    }
-    function oraclize_setCustomGasPrice(uint gasPrice) internal {
-        return oraclize.setCustomGasPrice(gasPrice);
-    }
-    function oraclize_setConfig(bytes32 config) internal {
-        return oraclize.setConfig(config);
+        return _query(self, datasource, dynargs, gaslimit);
     }
 
     function getCodeSize(address _addr) constant internal returns(uint _size) {
@@ -368,7 +345,7 @@ library Oraclize {
 
 contract Oraclized {
     using Oraclize for OraclizeI;
-    OraclizeI oraclize = Oraclize.oraclize_setNetwork();
+    OraclizeI oraclize = Oraclize.getOraclize();
 
     function __callback(bytes32 myid, string result) {
         __callback(myid, result, new bytes(0));
